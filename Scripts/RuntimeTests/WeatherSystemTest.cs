@@ -55,7 +55,7 @@ namespace DynamicWeatherSystem.RuntimeTests
 
             RunFunctionForEachCell(delegate(int x, int y, int z)
             {
-                newCellData[x, y, z] = IterateCellData(x, y, z);
+                newCellData[x, y, z] = IterateCellDataTest1(x, y, z, cellData);
             });
 
             cellData = newCellData;
@@ -74,17 +74,31 @@ namespace DynamicWeatherSystem.RuntimeTests
             if (y < groundLevel) cellData[x, y, z].humidity = oceanHumidity;
         }
 
-        CellInformation IterateCellData(int x, int y, int z)
+        static CellInformation IterateCellDataTemplate(int x, int y, int z, CellInformation[,,] existingCellData)
         {
             //Cell modification logic goes here
+            CellInformation currentData = existingCellData[x, y, z];
 
-            CellInformation existingCellData = cellData[x, y, z];
 
             return new CellInformation
             {
-                pressurePascal = existingCellData.pressurePascal,
-                humidity = existingCellData.humidity,
-                temperatureKelvin = existingCellData.temperatureKelvin
+                pressurePascal = currentData.pressurePascal,
+                humidity = currentData.humidity,
+                temperatureKelvin = currentData.temperatureKelvin
+            };
+        }
+
+        static CellInformation IterateCellDataTest1(int x, int y, int z, CellInformation[,,] existingCellData)
+        {
+            //Cell modification logic goes here
+            CellInformation currentData = existingCellData[x, y, z];
+
+
+            return new CellInformation
+            {
+                pressurePascal = currentData.pressurePascal,
+                humidity = currentData.humidity,
+                temperatureKelvin = currentData.temperatureKelvin
             };
         }
 
