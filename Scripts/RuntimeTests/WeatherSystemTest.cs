@@ -32,11 +32,14 @@ namespace DynamicWeatherSystem.RuntimeTests
 
         //Runtime data
         CellInformation[,,] cellData;
+        Vector3Int gridSize;
 
         //Unity functions:
         void Start()
         {
-            cellData = new CellInformation[linked3DTexture.width, linked3DTexture.height, linked3DTexture.depth];
+            gridSize = new Vector3Int(linked3DTexture.width, linked3DTexture.height, linked3DTexture.depth);
+
+            cellData = new CellInformation[gridSize.x, gridSize.y, gridSize.z];
 
             RunFunctionForEachCell(SetupCellData);
         }
@@ -47,8 +50,17 @@ namespace DynamicWeatherSystem.RuntimeTests
 
             sw.Start();
 
-            RunFunctionForEachCell(IterateCellData);
+            //Update cells: New data should not affect other cells
+            CellInformation[,,] backupCellData = cellData;
 
+            cellData = new CellInformation[gridSize.x, gridSize.y, gridSize.z];
+
+            RunFunctionForEachCell(delegate(int x, int y, int z)
+            {
+                cellData[x, y, z] = IterateCellData(x, y, z, backupCellData[x, y, z]);
+            });
+
+            //Output result
             WriteTextureData();
 
             updateTimeMs = sw.ElapsedMilliseconds;
@@ -62,12 +74,16 @@ namespace DynamicWeatherSystem.RuntimeTests
             if (y < groundLevel) cellData[x, y, z].humidity = oceanHumidity;
         }
 
-        void IterateCellData(int x, int y, int z)
+        CellInformation IterateCellData(int x, int y, int z, CellInformation existingCellData)
         {
-            CellInformation currentInformation = cellData[x, y, z];
-
             //Cell modification logic goes here
 
+            return new CellInformation
+            {
+                pressurePascal = existingCellData.pressurePascal,
+                humidity = existingCellData.humidity,
+                temperatureKelvin = existingCellData.temperatureKelvin
+            };
         }
 
         Color32 GetColorOfCell(int x, int y, int z)
@@ -76,6 +92,24 @@ namespace DynamicWeatherSystem.RuntimeTests
 
             if (currentInformation.humidity == oceanHumidity) return oceanColor;
             else return clearColor;
+        }
+
+        //Support functions:
+
+
+        //Runtime functions:
+        void RunFunctionForEachCell(CellFunction cellFunction)
+        {
+            for (int x = 0; x < cellData.GetLength(0); x++)
+            {
+                for (int y = 0; y < cellData.GetLength(1); y++)
+                {
+                    for (int z = 0; z < cellData.GetLength(2); z++)
+                    {
+                        cellFunction(x, y, z);
+                    }
+                }
+            }
         }
 
         void WriteTextureData()
@@ -104,22 +138,5 @@ namespace DynamicWeatherSystem.RuntimeTests
 
             linked3DTexture.Apply();
         }
-
-        void RunFunctionForEachCell(CellFunction cellFunction)
-        {
-            for (int x = 0; x < cellData.GetLength(0); x++)
-            {
-                for (int y = 0; y < cellData.GetLength(1); y++)
-                {
-                    for (int z = 0; z < cellData.GetLength(2); z++)
-                    {
-                        cellFunction(x, y, z);
-                    }
-                }
-            }
-        }
-
-        //Support functions:
-
     }
 }
