@@ -51,14 +51,14 @@ namespace DynamicWeatherSystem.RuntimeTests
             sw.Start();
 
             //Update cells: New data should not affect other cells
-            CellInformation[,,] backupCellData = cellData;
-
-            cellData = new CellInformation[gridSize.x, gridSize.y, gridSize.z];
+            CellInformation[,,]  newCellData = new CellInformation[gridSize.x, gridSize.y, gridSize.z];
 
             RunFunctionForEachCell(delegate(int x, int y, int z)
             {
-                cellData[x, y, z] = IterateCellData(x, y, z, backupCellData[x, y, z]);
+                newCellData[x, y, z] = IterateCellData(x, y, z);
             });
+
+            cellData = newCellData;
 
             //Output result
             WriteTextureData();
@@ -74,9 +74,11 @@ namespace DynamicWeatherSystem.RuntimeTests
             if (y < groundLevel) cellData[x, y, z].humidity = oceanHumidity;
         }
 
-        CellInformation IterateCellData(int x, int y, int z, CellInformation existingCellData)
+        CellInformation IterateCellData(int x, int y, int z)
         {
             //Cell modification logic goes here
+
+            CellInformation existingCellData = cellData[x, y, z];
 
             return new CellInformation
             {
