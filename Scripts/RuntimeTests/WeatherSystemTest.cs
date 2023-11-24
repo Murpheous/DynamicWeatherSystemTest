@@ -23,7 +23,7 @@ namespace DynamicWeatherSystem.RuntimeTests
         const float oceanHumidity = Mathf.Infinity;
 
         Color oceanColor = Color.blue;
-        Color clearColor = Color.black;
+        Color clearColor = Color.clear;
 
         //Unity assignments:
         [SerializeField] Texture3D linked3DTexture;
