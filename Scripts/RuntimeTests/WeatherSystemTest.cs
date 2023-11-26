@@ -21,6 +21,8 @@ namespace DynamicWeatherSystem.RuntimeTests
         const float rockPressure = Mathf.Infinity;
         const float waterHumidity = 2f;
         const float oceanHumidity = Mathf.Infinity;
+        const float cellDimension = 10f;
+        const int waterHeight = 2;
 
         Color oceanColor = Color.blue;
         Color clearColor = Color.clear;
@@ -111,7 +113,17 @@ namespace DynamicWeatherSystem.RuntimeTests
         }
 
         //Support functions:
+        float GetShouldBePressureFromIndex(int y)
+        {
+            float height = GetHeightFromYIndex(y);
 
+
+        }
+
+        float GetHeightFromYIndex(int y)
+        {
+            return (y - waterHeight) * cellDimension;
+        }
 
         //Runtime functions:
         void RunFunctionForEachCell(CellFunction cellFunction)
