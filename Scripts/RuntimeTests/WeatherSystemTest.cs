@@ -20,9 +20,15 @@ namespace DynamicWeatherSystem.RuntimeTests
         //Basic parameters:
         const float rockPressure = Mathf.Infinity;
         const float waterHumidity = 2f;
+
         const float oceanHumidity = Mathf.Infinity;
         const float cellDimension = 10f;
-        const int waterHeight = 2;
+        const int oceanIndex = 0;
+
+        //Physical parameters
+        const float gravitationAcceleration = 9.80665f;
+        const float MolarMassOfAir = 0.0289644f;
+        const float UniversalGasConstant = 8.3144598f;
 
         Color oceanColor = Color.blue;
         Color clearColor = Color.clear;
@@ -71,16 +77,50 @@ namespace DynamicWeatherSystem.RuntimeTests
         //Main functions:
         void SetupCellData(int x, int y, int z)
         {
-            int groundLevel = 5;
+            float endOfTroposphereAltitude = 11000;
+            float endOfTropopauseAltitude = 20000;
+            float troposphereLapseRate = -0.006516112569f;
+            float stratosphereLapseRate = 0.0009842519685f;
+            float seaLevelTemperature = 273.15f + 15f;
+            float seaLevelAirPressure = 101325f;
+            float EndOfTroposphereTemperature;
+            float EndOfTropospherePressure;
+            float EndOfTropopausePressure;
 
-            if (y < groundLevel) cellData[x, y, z].humidity = oceanHumidity;
+            if (y <= oceanIndex)
+            {
+                cellData[x, y, z].humidity = oceanHumidity;
+            }
+            else
+            {
+                float altitude = GetAltitudeFromYIndex(y);
+
+                cellData[x, y, z].pressurePascal = GetShouldBePressure(altitude);
+                cellData[x, y, z].temperatureKelvin = TemperatureAtAltitude(altitude);
+            }
+
+            float GetShouldBePressure(float altitude)
+            {
+                float temperature = TemperatureAtAltitude(altitude);
+
+                //Barometric formula if temperature laps rate is not 0
+                float temperatureRatio = temperature / seaLevelTemperature;
+
+                float exponent = -gravitationAcceleration * MolarMassOfAir / UniversalGasConstant / troposphereLapseRate;
+
+                return seaLevelAirPressure * Mathf.Pow(temperatureRatio, exponent);
+            }
+
+            float TemperatureAtAltitude(float altitude)
+            {
+                return seaLevelTemperature + altitude * troposphereLapseRate;
+            }
         }
 
         static CellInformation IterateCellDataTemplate(int x, int y, int z, CellInformation[,,] existingCellData)
         {
             //Cell modification logic goes here
             CellInformation currentData = existingCellData[x, y, z];
-
 
             return new CellInformation
             {
@@ -113,16 +153,9 @@ namespace DynamicWeatherSystem.RuntimeTests
         }
 
         //Support functions:
-        float GetShouldBePressureFromIndex(int y)
+        float GetAltitudeFromYIndex(int y)
         {
-            float height = GetHeightFromYIndex(y);
-
-
-        }
-
-        float GetHeightFromYIndex(int y)
-        {
-            return (y - waterHeight) * cellDimension;
+            return (y - oceanIndex) * cellDimension;
         }
 
         //Runtime functions:
