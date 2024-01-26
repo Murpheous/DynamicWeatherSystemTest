@@ -140,7 +140,7 @@ namespace DynamicWeatherSystem.RuntimeTests
                 existingCellData[backIndex.x, backIndex.y, backIndex.z].humidity
                 ) * oneSixth;
 
-            float averageSurroundingTemperaturey = (
+            float averageSurroundingTemperature = (
                 existingCellData[leftCellIndex.x, leftCellIndex.y, leftCellIndex.z].temperatureKelvin +
                 existingCellData[rightIndex.x, rightIndex.y, rightIndex.z].temperatureKelvin +
                 existingCellData[upIndex.x, upIndex.y, upIndex.z].temperatureKelvin +
@@ -151,7 +151,7 @@ namespace DynamicWeatherSystem.RuntimeTests
 
             float newPressurePascal = currentData.pressurePascal + 0.1f * (averageSurroundingPressure - currentData.pressurePascal);
             float newHumidity = currentData.humidity + 1f * (averageSurroundingHumidity - currentData.humidity);
-            float newTemperature = currentData.temperatureKelvin + 1f * (averageSurroundingTemperaturey - currentData.temperatureKelvin);
+            float newTemperature = currentData.temperatureKelvin + 1f * (averageSurroundingTemperature - currentData.temperatureKelvin);
 
             totalTemperature += newTemperature;
 
