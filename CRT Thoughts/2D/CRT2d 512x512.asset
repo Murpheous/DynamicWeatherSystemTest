@@ -6,7 +6,7 @@ CustomRenderTexture:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: CRT50x25x50
+  m_Name: CRT2d 512x512
   m_ImageContentsHash:
     serializedVersion: 2
     Hash: 00000000000000000000000000000000
@@ -14,8 +14,8 @@ CustomRenderTexture:
   m_DownscaleFallback: 0
   m_IsAlphaChannelOptional: 0
   serializedVersion: 5
-  m_Width: 50
-  m_Height: 25
+  m_Width: 512
+  m_Height: 512
   m_AntiAliasing: 1
   m_MipCount: -1
   m_DepthStencilFormat: 0
@@ -35,15 +35,15 @@ CustomRenderTexture:
     m_WrapU: 1
     m_WrapV: 1
     m_WrapW: 1
-  m_Dimension: 3
+  m_Dimension: 2
   m_VolumeDepth: 50
   m_ShadowSamplingMode: 2
-  m_Material: {fileID: 2100000, guid: 52b6ef306642a874cbea4f1fcf6029ba, type: 2}
+  m_Material: {fileID: 2100000, guid: b6cea68dc9c8122468a084d0fa088661, type: 2}
   m_InitSource: 0
   m_InitMaterial: {fileID: 0}
   m_InitColor: {r: 1, g: 1, b: 1, a: 1}
-  m_InitTexture: {fileID: 11700000, guid: 8791fd03d4eaf834f9190426724b06ba, type: 2}
-  m_UpdateMode: 0
+  m_InitTexture: {fileID: 2800000, guid: 6be62496dc1681a489db7285e67c8947, type: 3}
+  m_UpdateMode: 1
   m_InitializationMode: 2
   m_UpdateZoneSpace: 0
   m_CurrentUpdateZoneSpace: 0

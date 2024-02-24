@@ -1,18 +1,18 @@
-﻿﻿Shader "Weather/CRT Diffusion 3D"
+﻿﻿Shader "Weather/CRT Diffusion 2D"
 {
     Properties
     {
-        _dt("TimeStep", Range(0.0, 0.5)) = 1 
-        _PressWeight("Pressure Rate", Range(0.01, 5.0)) = 1
-        _HumidWeight("Humidity Rate", Range(0.01, 5.0)) = 1
-        _TempWeight("Temperature Rate", Range(0.01, 5.0)) = 0.1
+        _dt("TimeStep", Range(0.0001, 1)) = 0.1 
+        _PressWeight("Pressure Weight", Range(0.01, 5.0)) = 1
+        _HumidWeight("Humidity Weight", Range(0.01, 5.0)) = 1
+        _TempWeight("Temperature Weight", Range(0.01, 5.0)) = 0.1
     }
 
     CGINCLUDE
 
     #include "UnityCustomRenderTexture.cginc"
     
-    #define A(U)  tex3D(_SelfTexture3D, float3(U))
+    #define A(U)  tex2D(_SelfTexture2D, float2(U))
 
     float _dt;
     float _PressWeight;
@@ -21,27 +21,24 @@
 
     float4 frag(v2f_customrendertexture i) : SV_Target
     {
-        float3 uvw = i.globalTexcoord;
+        float2 uv = i.globalTexcoord;
 
         float du = 1.0 / _CustomRenderTextureWidth;
         float dv = 1.0 / _CustomRenderTextureHeight;
-        float dw = 1.0 / _CustomRenderTextureDepth;
-        float4 duvw = float4(du, dv, dw,0);
+        float4 duv = float4(du, dv, 0 ,0);
 
         // Cell contains r= press, g= humid, b=temp
-        float4 cell = A(uvw); 
-        float4 cellUp = A(uvw + duvw.wyw);
-        float4 cellDwn = A(uvw - duvw.wyw);
-        float4 cellRgt = A(uvw + duvw.xww);
-        float4 cellLft = A(uvw - duvw.xww);
-        float4 cellFwd = A(uvw + duvw.wwz);
-        float4 cellBak = A(uvw - duvw.wwz);
+        float4 cell = A(uv); 
+        float4 cellUp = A(uv + duv.wy);
+        float4 cellDwn = A(uv - duv.wy);
+        float4 cellRgt = A(uv + duv.xw);
+        float4 cellLft = A(uv - duv.xw);
 
         /*  float newPressurePascal = currentData.pressurePascal + 0.1f * (averageSurroundingPressure - currentData.pressurePascal);
             float newHumidity = currentData.humidity + 1f * (averageSurroundingHumidity - currentData.humidity);
             float newTemperature = currentData.temperatureKelvin + 1f * (averageSurroundingTemperature - currentData.temperatureKelvin); */
 
-        float4 average = (cellUp + cellDwn + cellLft + cellRgt + cellFwd + cellBak)/6.0; //*0.16666666 ?;
+        float4 average = (cellUp + cellDwn + cellLft + cellRgt)*0.25;
         return float4(  cell.r + _dt * _PressWeight*(average.r - cell.r),
                         cell.g + _dt * _HumidWeight*(average.g - cell.g), 
                         cell.b + _dt * _TempWeight*(average.b - cell.b),
