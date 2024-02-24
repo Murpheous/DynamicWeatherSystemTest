@@ -46,12 +46,9 @@ public class CRTMonitor : MonoBehaviour
 
     private void OnGUI()
     {
-        if (!iHaveCRT)
-        {
-            GUI.Label(new Rect(0, 0, 200f, 35f), "CRT not present");
-            return;
-        }
-        crtResetNeeded |= GUI.Button(new Rect(0f, 0f, 120f, 35f), "Reset\nSimulation");
+        string txtCrtStatus = iHaveCRT ? "CRT Initialized" : "CRT not present!!";
+        GUILayout.Box(txtCrtStatus);
+        crtResetNeeded |= GUILayout.Button("Reset\nSimulation");
     }
 
 
